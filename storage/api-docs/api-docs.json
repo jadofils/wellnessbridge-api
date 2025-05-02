@@ -1,0 +1,288 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "WellnessBridge API For 8 Tables",
+        "description": "API documentation for managing health workers",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/v1/healthworkers": {
+            "get": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Get all health workers",
+                "description": "Retrieve all health workers from the database",
+                "operationId": "e6822edb986c4c947fc9143b245a72a5",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "No health workers found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Create a new health worker",
+                "description": "Stores a new health worker in the database",
+                "operationId": "ab929805c16ceb95fabc6fb7e91aeaf5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "gender",
+                                    "dob",
+                                    "role",
+                                    "telephone",
+                                    "email",
+                                    "address",
+                                    "cadreID"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "example": "Male"
+                                    },
+                                    "dob": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-01-01"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "Nurse"
+                                    },
+                                    "telephone": {
+                                        "type": "string",
+                                        "example": "123-456-7890"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main St, City, Country"
+                                    },
+                                    "cadreID": {
+                                        "type": "integer",
+                                        "example": 21
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Health worker created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/healthworkers/{hwID}": {
+            "get": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Get a single health worker",
+                "description": "Retrieve a specific health worker by ID",
+                "operationId": "463f47d294b7c3447e66bcf388c52ce2",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "Health worker not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Update an existing health worker",
+                "description": "Modifies an existing health worker's details",
+                "operationId": "d77f75cb7cc7057c42d73f6dc2a29e65",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane@example.com"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "Physician"
+                                    },
+                                    "telephone": {
+                                        "type": "string",
+                                        "example": "987-654-3210"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Health worker updated successfully"
+                    },
+                    "404": {
+                        "description": "Health worker not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Delete a health worker",
+                "description": "Removes a health worker from the system",
+                "operationId": "0e904538e4dc8d3f123f8040bcf85682",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Health worker deleted successfully"
+                    },
+                    "404": {
+                        "description": "Health worker not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/healthworkers/search": {
+            "get": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Search for health workers",
+                "description": "Finds health workers based on a search term",
+                "operationId": "293e1374e51159040d8d8cae5905baa7",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "John Doe"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Search results returned"
+                    },
+                    "404": {
+                        "description": "No matching health workers found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/healthworkers/page/{page}": {
+            "get": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Get paginated health workers",
+                "description": "Retrieve health workers with pagination",
+                "operationId": "6ae931220cf7c5396497e22dd1d4b771",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of health workers"
+                    },
+                    "404": {
+                        "description": "No health workers found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Health Workers",
+            "description": "Health Workers"
+        }
+    ]
+}
