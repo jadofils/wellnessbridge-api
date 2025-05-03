@@ -10,11 +10,11 @@ class HealthWorker extends Model
 
     protected $table = 'health_workers';
     protected $primaryKey = 'hwID'; // Use hwID instead of id
-    protected $fillable = ['name', 'gender', 'dob', 'role', 'telephone', 'email', 'image', 'address', 'cadreID'];
+    protected $fillable = ['name', 'gender', 'dob', 'role', 'telephone', 'email', 'image', 'address', 'cadID'];
 
 
     public function cadre()
     {
-        return $this->belongsTo(Cadre::class, 'cadreID');
+        return $this->belongsTo(Cadre::class, 'cadId');
     }
 }

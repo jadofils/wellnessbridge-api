@@ -16,10 +16,10 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->string('image')->nullable();
             $table->text('address');
-            $table->unsignedBigInteger('cadreID');
+            $table->unsignedBigInteger('cadID');
 
             // Corrected Foreign Key Reference
-            $table->foreign('cadreID')->references('cadID')->on('cadres')->onDelete('cascade');
+            $table->foreign('cadID')->references('cadID')->on('cadres')->onDelete('cascade');
 
             $table->timestamps();
         });

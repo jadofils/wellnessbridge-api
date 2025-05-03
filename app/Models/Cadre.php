@@ -9,6 +9,7 @@ class Cadre extends Model
     use HasFactory;
 
     protected $table = 'cadres';
+    protected $primaryKey = 'cadID';
 
     protected $fillable = [
         'name', 'description', 'qualification'
@@ -16,6 +17,6 @@ class Cadre extends Model
 
     public function healthWorkers()
     {
-        return $this->hasMany(HealthWorker::class, 'cadreID');
+        return $this->hasMany(HealthWorker::class, 'cadID');
     }
 }

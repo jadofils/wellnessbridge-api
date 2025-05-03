@@ -40,7 +40,7 @@ class HealthWorkerController extends Controller
     public function index()
     {
         // Logic to retrieve and return a list of health workers
-        $helthWorkers = HealthWorker::all();
+        $helthWorkers =HealthWorker::with('cadre')->get(); // Eager load the cadre relationship
         if($helthWorkers->isEmpty()) {
             return response()->json(['message' => 'No health workers found'], 404);
         }
@@ -84,7 +84,7 @@ class HealthWorkerController extends Controller
  *      @OA\RequestBody(
  *          required=true,
  *          @OA\JsonContent(
- *              required={"name", "gender", "dob", "role", "telephone", "email", "address", "cadreID"},
+ *              required={"name", "gender", "dob", "role", "telephone", "email", "address", "cadID"},
  *              @OA\Property(property="name", type="string", example="John Doe"),
  *              @OA\Property(property="gender", type="string", example="Male"),
  *              @OA\Property(property="dob", type="string", format="date", example="1990-01-01"),
@@ -92,7 +92,7 @@ class HealthWorkerController extends Controller
  *              @OA\Property(property="telephone", type="string", example="123-456-7890"),
  *              @OA\Property(property="email", type="string", format="email", example="john@example.com"),
  *              @OA\Property(property="address", type="string", example="123 Main St, City, Country"),
- *              @OA\Property(property="cadreID", type="integer", example=21)
+ *              @OA\Property(property="cadID", type="integer", example=21)
  *          )
  *      ),
  *      @OA\Response(response=201, description="Health worker created successfully"),
@@ -114,7 +114,7 @@ class HealthWorkerController extends Controller
                 'email' => 'required|string|email|max:255|unique:health_workers',
                 'image' => 'nullable|string',
                 'address' => 'required|string',
-                'cadreID' => 'required|exists:cadres,cadID',
+                'cadID' => 'required|exists:cadres,cadID',
             ]);
     
             $healthWorker = HealthWorker::create($validatedData);

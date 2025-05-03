@@ -6,6 +6,193 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/v1/cadres": {
+            "get": {
+                "tags": [
+                    "Cadres"
+                ],
+                "summary": "Get all cadres",
+                "description": "Display a listing of all cadres.",
+                "operationId": "5743e7ab51fabcb4726122b476e84a7e",
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Cadres"
+                ],
+                "summary": "Create a new cadre",
+                "description": "Store a newly created cadre.",
+                "operationId": "ce269336a2b4fb888948339349e00f88",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "qualification"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "qualification": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cadre created successfully"
+                    },
+                    "400": {
+                        "description": "ValcadIDation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/cadres/page/{page}": {
+            "get": {
+                "tags": [
+                    "Cadres"
+                ],
+                "summary": "Get paginated list of cadres",
+                "description": "Paginate cadres with a page parameter in the URL.",
+                "operationId": "a9e52cf244aaf5946b31d7316bba90ca",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "description": "Page number",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated cadres retrieved"
+                    }
+                }
+            }
+        },
+        "/api/v1/cadres/{cadre}": {
+            "get": {
+                "tags": [
+                    "Cadres"
+                ],
+                "summary": "Get a specific cadre",
+                "description": "Display a specific cadre.",
+                "operationId": "24e8059ad83b8cd811dd5c86e63b6557",
+                "parameters": [
+                    {
+                        "name": "cadre",
+                        "in": "path",
+                        "description": "cadID of the cadre",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cadre found"
+                    },
+                    "404": {
+                        "description": "Cadre not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Cadres"
+                ],
+                "summary": "Update an existing cadre",
+                "description": "Update a specific cadre.",
+                "operationId": "5021a6825b886b191249880d424ad930",
+                "parameters": [
+                    {
+                        "name": "cadre",
+                        "in": "path",
+                        "description": "cadID of the cadre",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "qualification": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cadre updated successfully"
+                    },
+                    "404": {
+                        "description": "Cadre not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Cadres"
+                ],
+                "summary": "Delete a cadre",
+                "description": "Delete a specific cadre.",
+                "operationId": "b6bf7e16343a6354d6c97a52f42326fa",
+                "parameters": [
+                    {
+                        "name": "cadre",
+                        "in": "path",
+                        "description": "cadID of the cadre",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cadre deleted successfully"
+                    },
+                    "404": {
+                        "description": "Cadre not found"
+                    }
+                }
+            }
+        },
         "/api/v1/healthworkers": {
             "get": {
                 "tags": [
@@ -43,7 +230,7 @@
                                     "telephone",
                                     "email",
                                     "address",
-                                    "cadreID"
+                                    "cadID"
                                 ],
                                 "properties": {
                                     "name": {
@@ -76,7 +263,7 @@
                                         "type": "string",
                                         "example": "123 Main St, City, Country"
                                     },
-                                    "cadreID": {
+                                    "cadID": {
                                         "type": "integer",
                                         "example": 21
                                     }
@@ -280,6 +467,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Cadres",
+            "description": "Operations related to healthcare cadres"
+        },
         {
             "name": "Health Workers",
             "description": "Health Workers"

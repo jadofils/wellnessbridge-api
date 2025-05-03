@@ -18,7 +18,7 @@ class HealthWorkerFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'image' => $this->faker->imageUrl(),
             'address' => $this->faker->address(),
-            'cadreID' => \App\Models\Cadre::factory(),
+            'cadID' => \App\Models\Cadre::factory(),
         ];
     }
 }

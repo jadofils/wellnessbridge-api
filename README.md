@@ -24,7 +24,7 @@ erDiagram
         string email "Email address"
         string image"Image profile"
         string address "Physical address"
-        int cadreID FK "References Cadre"
+        int cadID FK "References Cadre"
     }
     
     Child {
