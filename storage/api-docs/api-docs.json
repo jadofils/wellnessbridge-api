@@ -6,6 +6,421 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/v1/birth-properties": {
+            "get": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Get paginated list of birth properties",
+                "description": "Retrieve birth properties with pagination.",
+                "operationId": "4e2d75b876698aa624cfeb26bf03f80c",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Create a new birth property",
+                "description": "Store a newly created birth property.",
+                "operationId": "1b5a71e9e2598cb0228fd16a8dedd783",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "childID": {
+                                        "type": "integer",
+                                        "example": 141
+                                    },
+                                    "motherAge": {
+                                        "type": "integer",
+                                        "example": 30
+                                    },
+                                    "fatherAge": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "numberOfChildren": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "birthType": {
+                                        "type": "string",
+                                        "example": "Natural"
+                                    },
+                                    "birthWeight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3.2
+                                    },
+                                    "childCondition": {
+                                        "type": "string",
+                                        "example": "Healthy"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Birth property created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/birth-properties/{bID}": {
+            "get": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Get a birth property by ID",
+                "description": "Retrieve a specific birth property.",
+                "operationId": "bea4eba0a32b261168cc54dd718bc3cd",
+                "parameters": [
+                    {
+                        "name": "bID",
+                        "in": "path",
+                        "description": "Birth Property ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Birth property not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Update an existing birth property",
+                "description": "Modify the details of a birth property.",
+                "operationId": "4cb7bc6a418a9892f71eda7cfe5cc4f9",
+                "parameters": [
+                    {
+                        "name": "bID",
+                        "in": "path",
+                        "description": "Birth Property ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "motherAge": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fatherAge": {
+                                        "type": "integer",
+                                        "example": 34
+                                    },
+                                    "numberOfChildren": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "birthType": {
+                                        "type": "string",
+                                        "example": "C-section"
+                                    },
+                                    "birthWeight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3.5
+                                    },
+                                    "childCondition": {
+                                        "type": "string",
+                                        "example": "Premature"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Birth property updated successfully"
+                    },
+                    "404": {
+                        "description": "Birth property not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Delete a birth property",
+                "description": "Remove a birth property record.",
+                "operationId": "339473046299b65b18a6dc810b3ae03b",
+                "parameters": [
+                    {
+                        "name": "bID",
+                        "in": "path",
+                        "description": "Birth Property ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Birth property deleted successfully"
+                    },
+                    "404": {
+                        "description": "Birth property not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/birth-properties/by-child/{childID}": {
+            "get": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Get birth property by child ID",
+                "description": "Retrieve a birth property associated with a specific child.",
+                "operationId": "f1b7b9d073d9ee123bf6420e38c586e5",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Birth property not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Update birth property by child ID",
+                "description": "Modify the details of a birth property associated with a specific child.",
+                "operationId": "cfe71aee759ec1209540dec506d702a4",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "motherAge": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fatherAge": {
+                                        "type": "integer",
+                                        "example": 34
+                                    },
+                                    "numberOfChildren": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "birthType": {
+                                        "type": "string",
+                                        "example": "C-section"
+                                    },
+                                    "birthWeight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3.5
+                                    },
+                                    "childCondition": {
+                                        "type": "string",
+                                        "example": "Premature"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Birth property updated successfully"
+                    },
+                    "404": {
+                        "description": "Birth property not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Birth Properties"
+                ],
+                "summary": "Delete birth property by child ID",
+                "description": "Delete a birth property associated with a specific child.",
+                "operationId": "67b8e1703a89fa765024ba0408c78142",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Birth property deleted successfully"
+                    },
+                    "404": {
+                        "description": "Birth property not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
         "/api/v1/cadres": {
             "get": {
                 "tags": [
@@ -189,6 +604,267 @@
                     },
                     "404": {
                         "description": "Cadre not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/children": {
+            "get": {
+                "tags": [
+                    "Children"
+                ],
+                "summary": "Get paginated list of children",
+                "description": "Display a listing of children resources",
+                "operationId": "abfd365f803365f1d58541a7a89a31d9",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term to filter records",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Children retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Children"
+                ],
+                "summary": "Create a new child record",
+                "description": "Store a newly created child resource",
+                "operationId": "2dbf2a88620057466bc48e5ff6b81ed0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "gender",
+                                    "dob",
+                                    "address",
+                                    "parentName",
+                                    "parentContact"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "male"
+                                    },
+                                    "dob": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2018-01-01"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main St"
+                                    },
+                                    "parentName": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "parentContact": {
+                                        "type": "string",
+                                        "example": "555-1234"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Child created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/children/{id}": {
+            "get": {
+                "tags": [
+                    "Children"
+                ],
+                "summary": "Get child by ID",
+                "description": "Display the specified child resource",
+                "operationId": "08e159ed3ccd0a7e604febe3d7a09c31",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Child not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Children"
+                ],
+                "summary": "Update child record",
+                "description": "Update the specified child resource",
+                "operationId": "0a70fd57ea00075ea89231896a8481ef",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "male"
+                                    },
+                                    "dob": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2018-01-01"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main St"
+                                    },
+                                    "parentName": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "parentContact": {
+                                        "type": "string",
+                                        "example": "555-1234"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Child updated successfully"
+                    },
+                    "404": {
+                        "description": "Child not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Children"
+                ],
+                "summary": "Delete child record",
+                "description": "Remove the specified child resource",
+                "operationId": "117ea39981da1c397240a949cfa7642e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Child deleted successfully"
+                    },
+                    "404": {
+                        "description": "Child not found"
                     }
                 }
             }
@@ -468,8 +1144,16 @@
     },
     "tags": [
         {
+            "name": "Birth Properties",
+            "description": "Endpoints for managing birth properties"
+        },
+        {
             "name": "Cadres",
             "description": "Operations related to healthcare cadres"
+        },
+        {
+            "name": "Children",
+            "description": "API/v1 Endpoints for Child Management"
         },
         {
             "name": "Health Workers",

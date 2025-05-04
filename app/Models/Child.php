@@ -9,7 +9,8 @@ class Child extends Model
     use HasFactory;
 
     protected $table = 'children';
-
+    protected $primaryKey = 'childID'; // Use correct primary key
+    public $timestamps = true;
     protected $fillable = [
         'name', 'gender', 'dob', 'image', 'address',
         'parentName', 'parentContact'

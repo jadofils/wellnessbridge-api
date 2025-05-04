@@ -9,6 +9,8 @@ class BirthProperty extends Model
     use HasFactory;
 
     protected $table = 'birth_properties';
+    protected $primaryKey = 'bID';
+
 
     protected $fillable = [
         'childID', 'motherAge', 'fatherAge', 'numberOfChildren',
