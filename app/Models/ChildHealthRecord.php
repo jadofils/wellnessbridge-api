@@ -9,6 +9,8 @@ class ChildHealthRecord extends Model
     use HasFactory;
 
     protected $table = 'child_health_records';
+    //PRIMARY KEY
+    protected $primaryKey = 'recordID';
 
     protected $fillable = [
         'childID', 'healthWorkerID', 'checkupDate', 'height', 

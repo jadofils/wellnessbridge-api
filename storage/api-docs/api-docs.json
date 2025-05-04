@@ -869,6 +869,547 @@
                 }
             }
         },
+        "/api/v1/child-health-records": {
+            "get": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Get paginated list of child health records",
+                "description": "Retrieve child health records with pagination.",
+                "operationId": "6889bf6789826e16b37b008fc9251e78",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Create a new child health record",
+                "operationId": "0494dba847400e3f777b06515a2dc8c6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "childID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "healthWorkerID": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "checkupDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-04"
+                                    },
+                                    "height": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 120.5
+                                    },
+                                    "weight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 30.2
+                                    },
+                                    "vaccination": {
+                                        "type": "string",
+                                        "example": "Polio"
+                                    },
+                                    "diagnosis": {
+                                        "type": "string",
+                                        "example": "Healthy"
+                                    },
+                                    "treatment": {
+                                        "type": "string",
+                                        "example": "None"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Record created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/child-health-records/{recordID}": {
+            "get": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Get child health record by ID",
+                "description": "Retrieve a specific child health record.",
+                "operationId": "c2e2f96917f9a6afac81ea52faec4e61",
+                "parameters": [
+                    {
+                        "name": "recordID",
+                        "in": "path",
+                        "description": "Record ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Record not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Delete a child health record",
+                "operationId": "b4befd110683989ada8824bb1f3d6bc9",
+                "parameters": [
+                    {
+                        "name": "recordID",
+                        "in": "path",
+                        "description": "Record ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Record deleted successfully"
+                    },
+                    "404": {
+                        "description": "Record not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/child-health-records/by-child/{childID}": {
+            "get": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Get all health records for a specific child",
+                "operationId": "471fd2c26a25e0111f1de10d8f03be65",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Records not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Update health records by child ID",
+                "operationId": "b0619bfe4bcd608a9c9adb2038b7f143",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "healthWorkerID": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "checkupDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-04"
+                                    },
+                                    "height": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 120.5
+                                    },
+                                    "weight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 30.2
+                                    },
+                                    "vaccination": {
+                                        "type": "string",
+                                        "example": "Polio"
+                                    },
+                                    "diagnosis": {
+                                        "type": "string",
+                                        "example": "Healthy"
+                                    },
+                                    "treatment": {
+                                        "type": "string",
+                                        "example": "None"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Record updated successfully"
+                    },
+                    "404": {
+                        "description": "Record not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Add a health record for a specific child",
+                "operationId": "2c954604580b9a548ea75edec5c5d25b",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "healthWorkerID": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "checkupDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-04"
+                                    },
+                                    "height": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 120.5
+                                    },
+                                    "weight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 30.2
+                                    },
+                                    "vaccination": {
+                                        "type": "string",
+                                        "example": "Polio"
+                                    },
+                                    "diagnosis": {
+                                        "type": "string",
+                                        "example": "Healthy"
+                                    },
+                                    "treatment": {
+                                        "type": "string",
+                                        "example": "None"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Record added successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/child-health-records/by-health-worker/{hwID}": {
+            "get": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Get all health records assigned to a specific health worker",
+                "operationId": "a948acfb0cb7bff0585e6ae6e026c2e5",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "description": "Health Worker ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Records not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Update health records assigned to a specific health worker",
+                "operationId": "8577aec846ec7993d7bd18d3ef056f47",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "description": "Health Worker ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "childID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "checkupDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-04"
+                                    },
+                                    "height": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 120.5
+                                    },
+                                    "weight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 30.2
+                                    },
+                                    "vaccination": {
+                                        "type": "string",
+                                        "example": "Polio"
+                                    },
+                                    "diagnosis": {
+                                        "type": "string",
+                                        "example": "Healthy"
+                                    },
+                                    "treatment": {
+                                        "type": "string",
+                                        "example": "None"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Record updated successfully"
+                    },
+                    "404": {
+                        "description": "Record not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Child Health Records"
+                ],
+                "summary": "Add a health record assigned to a specific health worker",
+                "operationId": "6dbe12d66b8c97778772b7f33b40e820",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "description": "Health Worker ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "childID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "checkupDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-04"
+                                    },
+                                    "height": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 120.5
+                                    },
+                                    "weight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 30.2
+                                    },
+                                    "vaccination": {
+                                        "type": "string",
+                                        "example": "Polio"
+                                    },
+                                    "diagnosis": {
+                                        "type": "string",
+                                        "example": "Healthy"
+                                    },
+                                    "treatment": {
+                                        "type": "string",
+                                        "example": "None"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Record added successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
         "/api/v1/healthworkers": {
             "get": {
                 "tags": [
@@ -1154,6 +1695,10 @@
         {
             "name": "Children",
             "description": "API/v1 Endpoints for Child Management"
+        },
+        {
+            "name": "Child Health Records",
+            "description": "Endpoints for managing child health records"
         },
         {
             "name": "Health Workers",

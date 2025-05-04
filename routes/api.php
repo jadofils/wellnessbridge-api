@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HealthWorker\HealthWorkerController;
 use App\Http\Controllers\Cadre\CadreController;
 use App\Http\Controllers\Child\ChildController;
+use App\Http\Controllers\HealthRecords\ChildHealthRecordController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -39,7 +41,7 @@ Route::prefix('v1/children')->group(function () {
     Route::put('/{child}', [ChildController::class, 'update']);
     Route::delete('/{child}', [ChildController::class, 'destroy']);
 });
-
+//creating a route for birth properties by grouping prefix v1/birth-properties
 Route::prefix('v1/birth-properties')->group(function () {
     Route::get('/', [BirthPropertyController::class, 'index']); // Fixed typo
     Route::get('/{bID}', [BirthPropertyController::class, 'show']);
@@ -49,5 +51,20 @@ Route::prefix('v1/birth-properties')->group(function () {
     Route::get('/by-child/{childID}', [BirthPropertyController::class, 'showByChildID']);
     Route::delete('/by-child/{childID}', [BirthPropertyController::class, 'deleteByChildID']);
     Route::put('/by-child/{childID}', [BirthPropertyController::class, 'updateByChildID']);
+});
+
+//creating routes for child health records
+Route::prefix('v1/child-health-records')->group(function () {
+    Route::get('/', [ChildHealthRecordController::class, 'index']);
+    Route::get('/{recordID}', [ChildHealthRecordController::class, 'show']);
+    Route::post('/', [ChildHealthRecordController::class, 'store']);
+    Route::delete('/{recordID}', [ChildHealthRecordController::class, 'destroy']);
+    Route::get('/by-child/{childID}', [ChildHealthRecordController::class, 'getByChildID']);
+    Route::post('/by-child/{childID}', [ChildHealthRecordController::class, 'addByChildID']);
+    Route::put('/by-child/{childID}', [ChildHealthRecordController::class, 'updateByChildID']);
+    Route::get('/by-health-worker/{hwID}', [ChildHealthRecordController::class, 'getByHealthWorkerID']);
+    Route::post('/by-health-worker/{hwID}', [ChildHealthRecordController::class, 'addByHealthWorkerID']);
+    Route::put('/by-health-worker/{hwID}', [ChildHealthRecordController::class, 'updateByHealthWorkerID']);
+
 });
 
