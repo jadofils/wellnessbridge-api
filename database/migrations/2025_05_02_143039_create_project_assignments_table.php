@@ -13,7 +13,6 @@ return new class extends Migration {
             $table->date('assignedDate');
             $table->date('endDate')->nullable();
             $table->string('role');
-
             $table->foreign('hwID')->references('hwID')->on('health_workers')->onDelete('cascade');
             $table->foreign('prjID')->references('prjID')->on('projects')->onDelete('cascade');
 

@@ -7,6 +7,6 @@ class ProjectAssignmentSeeder extends Seeder
 {
     public function run(): void
     {
-        ProjectAssignment::factory()->count(25)->create();
+        ProjectAssignment::factory()->count(100)->create();
     }
 }

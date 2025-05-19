@@ -7,6 +7,6 @@ class ChildHealthRecordSeeder extends Seeder
 {
     public function run(): void
     {
-        ChildHealthRecord::factory()->count(30)->create();
+        ChildHealthRecord::factory()->count(100)->create();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\HealthWorker;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cadre;
 use Illuminate\Http\Request;
 use App\Models\HealthWorker; // Ensure you import the HealthWorker model
 use Exception;
@@ -39,16 +40,30 @@ class HealthWorkerController extends Controller
    
     public function index()
     {
-        // Logic to retrieve and return a list of health workers
-        $helthWorkers =HealthWorker::with('cadre')->get(); // Eager load the cadre relationship
-        if($helthWorkers->isEmpty()) {
-            return response()->json(['message' => 'No health workers found'], 404);
+        try {
+            // Retrieve all health workers with their cadre relationship
+            $healthWorkers = HealthWorker::with('cadre')->get();
+
+            // Check if the response contains data
+            if ($healthWorkers->isEmpty()) {
+                return response()->json([
+                    'message' => 'No health workers found',
+                    'data' => []
+                ], 404);
+            }
+
+            return response()->json([
+                'message' => 'Health workers retrieved successfully',
+                'data' => $healthWorkers
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
         }
-       //return all in message and response
-        return response()->json(['message' => 'Health workers retrieved successfully', 'data' => $helthWorkers], 200);
-
     }
-
    
     /**
      * @OA\Get(
@@ -61,20 +76,98 @@ class HealthWorkerController extends Controller
      *      @OA\Response(response=404, description="Health worker not found")
      * )
      */
-    public function show($hwID)
-    {
-        $healthWorker = HealthWorker::where('hwID', $hwID)->first(); // Use hwID instead of id
-    
+   public function show($hwID)
+{
+    try {
+        // Attempt to find the health worker with the cadre relationship
+        $healthWorker = HealthWorker::where('hwID', $hwID)->with('cadre')->first();
+
+        // Check if health worker exists
         if (!$healthWorker) {
-            return response()->json(['message' => 'Health worker not found'], 404);
+            return response()->json([
+                'message' => 'Health worker not found',
+                'data' => null
+            ], 404);
         }
-    
+
         return response()->json([
             'message' => 'Health worker retrieved successfully',
             'data' => $healthWorker
         ], 200);
+
+    } catch (\Throwable $th) {
+        // Catch any unexpected errors and return an appropriate response
+        return response()->json([
+            'message' => 'Internal Server Error',
+            'error' => $th->getMessage()
+        ], 500);
     }
-    
+}
+/**
+ * @OA\Post(
+ *      path="/api/v1/healthworkers/assign",
+ *      tags={"Health Workers"},
+ *      summary="Assign a health worker to a cadre",
+ *      description="Assigns a health worker to a specific cadre",
+ *      @OA\RequestBody(
+ *          required=true,
+ *          @OA\JsonContent(
+ *              required={"cadID", "hwID"},
+ *              @OA\Property(property="cadID", type="integer", example=1),
+ *              @OA\Property(property="hwID", type="integer", example=1)
+ *          )
+ *      ),
+ *      @OA\Response(response=200, description="Health worker assigned to cadre successfully"),
+ *      @OA\Response(response=404, description="Cadre or health worker not found"),
+ *      @OA\Response(response=500, description="Internal server error")
+ * )
+ */
+
+
+//assign healthworker to cadre
+public function AssignHealthWorkToCadre(Request $request)
+{
+    try {
+        $validatedData = $request->validate([
+            'cadID' => 'required|exists:cadres,cadID',
+            'hwID' => 'required|exists:health_workers,hwID',
+        ]);
+
+        // Check if the cadre exists
+        $existCadre = Cadre::where('cadID', $validatedData['cadID'])->first();
+        if (!$existCadre) {
+            return response()->json([
+                'message' => 'Cadre not found'
+            ], 404);
+        }
+
+        // Find the health worker and assign the cadre
+        $healthWorker = HealthWorker::find($validatedData['hwID']);
+        if (!$healthWorker) {
+            return response()->json(['message' => 'Health worker not found'], 404);
+        }
+
+        // Assign the health worker to the cadre
+        $healthWorker->cadID = $validatedData['cadID'];
+        $healthWorker->save();
+
+        // Reload the health worker with the cadre relationship
+        $healthWorker = HealthWorker::with('cadre')->find($validatedData['hwID']);
+
+        return response()->json([
+            'message' => 'Health worker assigned to cadre successfully',
+            'data' => $healthWorker
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Internal Server Error',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
 /**
  * @OA\Post(
  *      path="/api/v1/healthworkers",
@@ -116,13 +209,18 @@ class HealthWorkerController extends Controller
                 'address' => 'required|string',
                 'cadID' => 'required|exists:cadres,cadID',
             ]);
-    
+    //create the with the image
             $healthWorker = HealthWorker::create($validatedData);
             return response()->json([
                 'message' => 'Health worker created successfully',
                 'data' => $healthWorker
             ], 201);
-    
+      $existCadre = Cadre::where('cadreID', $validatedData['cadreID'])->first();
+        if (!$existCadre) {
+            return response()->json([
+                'message' => 'Cadre not found'
+            ], 404);
+        }
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error',

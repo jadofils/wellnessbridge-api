@@ -9,6 +9,7 @@ class HealthRestriction extends Model
     use HasFactory;
 
     protected $table = 'health_restrictions';
+    protected $primaryKey = 'hrID';
 
     protected $fillable = [
         'recordID', 'description', 'severity'

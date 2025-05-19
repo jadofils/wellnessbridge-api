@@ -7,7 +7,7 @@ class HealthWorkerSeeder extends Seeder
 {
     public function run(): void
     {
-        HealthWorker::factory()->count(50)->create();
+        HealthWorker::factory()->count(100)->create();
         
     }
 }

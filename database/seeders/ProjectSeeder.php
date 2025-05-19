@@ -7,6 +7,6 @@ class ProjectSeeder extends Seeder
 {
     public function run(): void
     {
-        Project::factory()->count(25)->create();
+        Project::factory()->count(100)->create();
     }
 }

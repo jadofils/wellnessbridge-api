@@ -1410,6 +1410,298 @@
                 }
             }
         },
+        "/api/v1/health-restrictions": {
+            "get": {
+                "tags": [
+                    "Health Restrictions"
+                ],
+                "summary": "Get paginated list of health restrictions",
+                "description": "Retrieve health restrictions with pagination.",
+                "operationId": "b684afafcfa469fc75519862883d138b",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/health-restrictions/{hrID}": {
+            "get": {
+                "tags": [
+                    "Health Restrictions"
+                ],
+                "summary": "Get health restriction by ID",
+                "description": "Retrieve a specific health restriction.",
+                "operationId": "847e46789afacf75798175b43992844c",
+                "parameters": [
+                    {
+                        "name": "hrID",
+                        "in": "path",
+                        "description": "Health Restriction ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Restriction not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/health-restrictions/by-health-worker/{hwID}": {
+            "put": {
+                "tags": [
+                    "Health Restrictions"
+                ],
+                "summary": "Update health restrictions assigned to a specific health worker",
+                "operationId": "3201715235a62d73f6b7968c9ecf59fe",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "description": "Health Worker ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "description": {
+                                        "type": "string",
+                                        "example": "No strenuous activity"
+                                    },
+                                    "severity": {
+                                        "type": "string",
+                                        "example": "Severe"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Restriction updated successfully"
+                    },
+                    "404": {
+                        "description": "Restriction not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Health Restrictions"
+                ],
+                "summary": "Add a health restriction assigned to a specific health worker",
+                "operationId": "c84d6a73dac95d55b863845f9c6064f3",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "description": "Health Worker ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "recordID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "No strenuous activity"
+                                    },
+                                    "severity": {
+                                        "type": "string",
+                                        "example": "Moderate"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Restriction added successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Health Restrictions"
+                ],
+                "summary": "Delete health restrictions assigned to a specific health worker",
+                "operationId": "447c876c0cf427e4016d6e716d3d0223",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "description": "Health Worker ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restriction deleted successfully"
+                    },
+                    "404": {
+                        "description": "Restriction not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/health-restrictions/by-child/{childID}": {
+            "post": {
+                "tags": [
+                    "Health Restrictions"
+                ],
+                "summary": "Add a health restriction assigned to a specific child",
+                "operationId": "15fec3d1e29199d24c1c41acfe163bee",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "recordID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "No strenuous activity"
+                                    },
+                                    "severity": {
+                                        "type": "string",
+                                        "example": "Moderate"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Restriction added successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Health Restrictions"
+                ],
+                "summary": "Delete health restrictions assigned to a specific child",
+                "operationId": "6f05f1b8e4994a43b4084851d3a79512",
+                "parameters": [
+                    {
+                        "name": "childID",
+                        "in": "path",
+                        "description": "Child ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restriction deleted successfully"
+                    },
+                    "404": {
+                        "description": "Restriction not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
         "/api/v1/healthworkers": {
             "get": {
                 "tags": [
@@ -1618,6 +1910,51 @@
                 }
             }
         },
+        "/api/v1/healthworkers/assign": {
+            "post": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Assign a health worker to a cadre",
+                "description": "Assigns a health worker to a specific cadre",
+                "operationId": "ed968c7adfa7ff3805464b33b570ea71",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cadID",
+                                    "hwID"
+                                ],
+                                "properties": {
+                                    "cadID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "hwID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Health worker assigned to cadre successfully"
+                    },
+                    "404": {
+                        "description": "Cadre or health worker not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/api/v1/healthworkers/search": {
             "get": {
                 "tags": [
@@ -1681,6 +2018,557 @@
                     }
                 }
             }
+        },
+        "/api/v1/project-assignments": {
+            "get": {
+                "tags": [
+                    "ProjectAssignments"
+                ],
+                "summary": "Get all project assignments",
+                "operationId": "cdb27375db295991e286cf3c783dae06",
+                "responses": {
+                    "200": {
+                        "description": "List of project assignments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProjectAssignment"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No project assignments found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ProjectAssignments"
+                ],
+                "summary": "Create a new project assignment",
+                "operationId": "af05461bf8166cb00e9be524c8f451f5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProjectAssignment"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Project assignment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectAssignment"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to create project assignment"
+                    }
+                }
+            }
+        },
+        "/api/v1/project-assignments/{id}": {
+            "get": {
+                "tags": [
+                    "ProjectAssignments"
+                ],
+                "summary": "Get a specific project assignment",
+                "operationId": "fddd42fe538eac0edfa2f488b362c02c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project assignment found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectAssignment"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project assignment not found"
+                    },
+                    "500": {
+                        "description": "Failed to fetch project assignment"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ProjectAssignments"
+                ],
+                "summary": "Update a specific project assignment",
+                "operationId": "8e951c8a5c04bb2b3acee748860dda69",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "hwID": {
+                                        "type": "integer"
+                                    },
+                                    "prjID": {
+                                        "type": "integer"
+                                    },
+                                    "assignedDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "endDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "role": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Project assignment updated"
+                    },
+                    "404": {
+                        "description": "Project assignment not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to update project assignment"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProjectAssignments"
+                ],
+                "summary": "Delete a specific project assignment",
+                "operationId": "506b93d3c4a54b3d621b45526bd7c6f7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project assignment deleted"
+                    },
+                    "404": {
+                        "description": "Project assignment not found"
+                    },
+                    "500": {
+                        "description": "Failed to delete project assignment"
+                    }
+                }
+            }
+        },
+        "/api/v1/projects": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get all projects",
+                "operationId": "f37e87d228a1da961dbe740509a572b0",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Project"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No projects found"
+                    },
+                    "500": {
+                        "description": "Failed to fetch projects"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Create a new project",
+                "operationId": "6e5209e27969af6aef07c83d551d34b6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cadID",
+                                    "name",
+                                    "description",
+                                    "startDate",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "cadID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Project Alpha"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "This is a sample project."
+                                    },
+                                    "startDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-01"
+                                    },
+                                    "endDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-06-01"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "ongoing"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Project created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Project"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to create project"
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/{id}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get a single project",
+                "operationId": "5f0441b4224dd6fad130c8ccdfb58f3a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Project"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "500": {
+                        "description": "Failed to fetch project"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Update an existing project",
+                "operationId": "77a635bc6d6b3545d139f4d2849f1e73",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cadID": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Updated Project Name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated description"
+                                    },
+                                    "startDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-06-01"
+                                    },
+                                    "endDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-01"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "completed"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Project updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Project"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to update project"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Delete a project",
+                "operationId": "a037bdd1a182724247044ac09e8c25e0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project deleted successfully"
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "500": {
+                        "description": "Failed to delete project"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ProjectAssignment": {
+                "title": "ProjectAssignment",
+                "required": [
+                    "hwID",
+                    "prjID",
+                    "assignedDate",
+                    "role"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "hwID": {
+                        "description": "Health worker ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "prjID": {
+                        "description": "Project ID",
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "assignedDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-05-01"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-08-01",
+                        "nullable": true
+                    },
+                    "role": {
+                        "type": "string",
+                        "example": "Team Lead"
+                    },
+                    "healthWorker": {
+                        "properties": {
+                            "hwID": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "project": {
+                        "properties": {
+                            "prjID": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "Project": {
+                "title": "Project",
+                "required": [
+                    "cadID",
+                    "name",
+                    "description",
+                    "startDate",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "cadID": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "startDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "cadre": {
+                        "properties": {
+                            "cadID": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
         }
     },
     "tags": [
@@ -1701,8 +2589,20 @@
             "description": "Endpoints for managing child health records"
         },
         {
+            "name": "Health Restrictions",
+            "description": "Endpoints for managing health restrictions"
+        },
+        {
             "name": "Health Workers",
             "description": "Health Workers"
+        },
+        {
+            "name": "ProjectAssignments",
+            "description": "ProjectAssignments"
+        },
+        {
+            "name": "Projects",
+            "description": "Projects"
         }
     ]
 }

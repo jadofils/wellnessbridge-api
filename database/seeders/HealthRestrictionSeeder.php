@@ -7,6 +7,6 @@ class HealthRestrictionSeeder extends Seeder
 {
     public function run(): void
     {
-        HealthRestriction::factory()->count(30)->create();
+        HealthRestriction::factory()->count(100)->create();
     }
 }

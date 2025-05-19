@@ -7,6 +7,6 @@ class CadreSeeder extends Seeder
 {
     public function run(): void
     {
-        Cadre::factory()->count(20)->create();
+        Cadre::factory()->count(100)->create();
     }
 }

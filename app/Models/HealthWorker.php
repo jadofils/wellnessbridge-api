@@ -10,11 +10,13 @@ class HealthWorker extends Model
 
     protected $table = 'health_workers';
     protected $primaryKey = 'hwID'; // Use hwID instead of id
+    //role as enums
+    
     protected $fillable = ['name', 'gender', 'dob', 'role', 'telephone', 'email', 'image', 'address', 'cadID'];
 
 
     public function cadre()
     {
-        return $this->belongsTo(Cadre::class, 'cadId');
-    }
+        return $this->belongsTo(Cadre::class, 'cadID', 'cadID');
+        }
 }

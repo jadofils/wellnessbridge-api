@@ -9,6 +9,7 @@ class Project extends Model
     use HasFactory;
 
     protected $table = 'projects';
+    protected $primaryKey = 'prjID';
 
     protected $fillable = [
         'cadID', 'name', 'description', 'startDate', 'endDate', 'status'

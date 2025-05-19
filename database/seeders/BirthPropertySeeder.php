@@ -7,6 +7,6 @@ class BirthPropertySeeder extends Seeder
 {
     public function run(): void
     {
-        BirthProperty::factory()->count(30)->create();
+        BirthProperty::factory()->count(100)->create();
     }
 }
