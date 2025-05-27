@@ -9,6 +9,8 @@ use App\Models\HealthWorker; // Ensure you import the HealthWorker model
 use Exception;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 
 
@@ -532,72 +534,97 @@ public function store(Request $request)
      *     @OA\Response(response=429, description="Too Many Requests")
      * )
      */
+    /**
+     * Handle an incoming login request for HealthWorkers.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
-{
-    try {
-        // Rate limiter to prevent brute-force attacks
-        if (RateLimiter::tooManyAttempts('login:' . $request->email, 5)) {
-            return response()->json(['message' => 'Too many login attempts. Please try again later.'], 429);
+    {
+        // --- 1. Rate Limiting to prevent brute-force attacks ---
+        // Configure as needed: 5 attempts within 1 minute for a given email.
+        $decayMinutes = 1;
+        $maxAttempts = 5;
+        $limiterKey = 'login:' . $request->email;
+
+        if (RateLimiter::tooManyAttempts($limiterKey, $maxAttempts)) {
+            $seconds = RateLimiter::availableIn($limiterKey);
+            return response()->json([
+                'message' => 'Too many login attempts. Please try again after ' . $seconds . ' seconds.',
+                'retry_after' => $seconds
+            ], 429); // 429 Too Many Requests status
         }
 
-        // Normalize the role to lowercase for consistent validation
-        // This makes 'admin', 'Admin', 'ADMIN' all treated as 'admin'
-        $request->merge(['role' => strtolower($request->input('role'))]);
+        try {
+            // --- 2. Normalize and Validate Input ---
+            // Convert the 'role' input to lowercase for consistent validation and comparison.
+            $request->merge(['role' => strtolower($request->input('role'))]);
 
-        // Validate input
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-            // Now, list all roles in lowercase. Remove the empty string.
-            'role' => ['required', 'string', 'in:health_worker,admin,parent,umunyabuzima'],
-            'remember_me' => 'boolean',
-        ]);
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string|min:6', // Password must be at least 6 characters
+                // The 'role' must be one of the specified lowercase values.
+                'role' => ['required', 'string', 'in:health_worker,admin,parent,umunyabuzima'],
+                'remember_me' => 'boolean', // Optional: for clients to request longer session
+            ]);
 
-        // Find user
-        // Consider if the email should also be case-insensitive in lookup,
-        // though standard practice is emails are case-insensitive.
-        $user = HealthWorker::where('email', $request->email)->first();
+            // --- 3. Find User by Email ---
+            $user = HealthWorker::where('email', $request->email)->first();
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            // If user not found, increment rate limiter and return error.
+            if (!$user) {
+                RateLimiter::hit($limiterKey); // Increment for security (prevent email enumeration)
+                return response()->json(['message' => 'Invalid credentials. Please check your email and password.'], 401);
+            }
+
+            // --- 4. Verify Password ---
+            // Use Laravel's Hash::check to compare the plain password with the hashed one from the database.
+            if (!Hash::check($request->password, $user->password)) {
+                RateLimiter::hit($limiterKey); // Increment on failed password attempt
+                return response()->json(['message' => 'Invalid credentials. Please check your email and password.'], 401);
+            }
+
+            // --- 5. Check Role Match ---
+            // Compare the normalized input role with the user's role from the database.
+            // Ensure the database role is also normalized for comparison.
+            if (strtolower($user->role) !== $request->role) {
+                RateLimiter::hit($limiterKey); // Increment on role mismatch
+                return response()->json(['message' => 'Access denied for this role. The provided role does not match the user\'s assigned role.'], 403);
+            }
+
+            // --- 6. Successful Login: Generate API Token ---
+            // If all checks pass, clear the rate limiter for this email.
+            RateLimiter::clear($limiterKey);
+
+            // Create an API token for the user using Laravel Sanctum.
+            // You can define specific abilities (permissions) for the token. '*' grants all.
+            $token = $user->createToken('auth_token', ['*'])->plainTextToken;
+
+            // --- 7. Return Success Response ---
+            return response()->json([
+                'message' => 'Login successful!',
+                'user' => $user, // Return user data (consider what sensitive data to omit)
+                'token' => $token,
+                'token_type' => 'Bearer',
+            ], 200); // 200 OK status
+
+        } catch (ValidationException $e) {
+            // --- Handle Validation Errors ---
+            RateLimiter::hit($limiterKey); // Increment for invalid inputs as well
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422); // 422 Unprocessable Entity status
+        } catch (\Throwable $th) {
+            // --- Handle General Unexpected Errors ---
+            // Log the error for internal debugging, but return a generic message to the client.
+            Log::error("Login error for email: {$request->email} - " . $th->getMessage(), [
+                'exception' => $th,
+                'trace' => $th->getTraceAsString(),
+                'request_data' => $request->all() // Log request data for debugging
+            ]);
+            return response()->json(['message' => 'An unexpected error occurred. Please try again later.'], 500); // 500 Internal Server Error status
         }
-
-        // Verify password using Laravel's Hash facade
-        if (!Hash::check($request->password, $user->password)) {
-            // Clear rate limiter on failed login to avoid locking out legitimate users due to password typo
-            RateLimiter::hit('login:' . $request->email); // Increment failed attempts
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        // Check role match - Ensure the role stored in the database is also consistent (e.g., lowercase)
-        // Or, convert the database role to lowercase for comparison here.
-        if (strtolower($user->role) !== $request->role) { // Compare normalized roles
-            // Increment rate limiter on role mismatch too, as it's a failed attempt
-            RateLimiter::hit('login:' . $request->email);
-            return response()->json(['message' => 'Role mismatch'], 403);
-        }
-
-        // Generate API token
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        // Reset rate limiter on successful login
-        RateLimiter::clear('login:' . $request->email);
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ], 200);
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        // Importantly, increment rate limiter for failed validation too
-        RateLimiter::hit('login:' . $request->email);
-        return response()->json([
-            'message' => 'Validation Error',
-            'errors' => $e->errors()
-        ], 422);
-    } catch (\Throwable $th) {
-        // For general errors, also consider hitting the rate limiter if it's a critical section
-        return response()->json(['message' => 'An error occurred: ' . $th->getMessage()], 500);
     }
-}
 }

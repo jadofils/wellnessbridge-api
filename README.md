@@ -119,6 +119,7 @@ erDiagram
 - Stores birth-related data
 - One-to-one relationship with Child (each birth record belongs to exactly one child)
 
+
 #### HealthRestriction (Priority: MEDIUM)
 - Records health issues, allergies, or special considerations
 - Many-to-one relationship with ChildHealthRecord (many restrictions can belong to one record)
