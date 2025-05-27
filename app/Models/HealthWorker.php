@@ -14,6 +14,13 @@ class HealthWorker extends Model
     
     protected $fillable = ['name', 'gender', 'dob', 'role', 'telephone', 'email', 'image', 'address', 'cadID'];
 
+// Set default values for attributes
+    protected $attributes = [
+        'dob' => null,
+        'telephone' => null,
+        'image' => null,
+        'address' => null,
+    ];
 
     public function cadre()
     {

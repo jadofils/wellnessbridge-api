@@ -53,12 +53,18 @@ Route::prefix('v1/healthworkers')->group(function () {
     Route::put('/{id}', [HealthWorkerController::class, 'update']);
     Route::delete('/{id}', [HealthWorkerController::class, 'destroy']);
     //assigning health worker to a cadre
-    Route::post('/assign', [HealthWorkerController::class, 'AssignHealthWorkToCadre']);
+Route::post('/{hwID}/assign', [HealthWorkerController::class, 'AssignHealthWorkToCadre']);
     //search
     Route::get('/search', [HealthWorkerController::class, 'search']);
     //pages
     Route::get('/page/{page}', [HealthWorkerController::class, 'getPage']);
+    //update profile
+    Route::put('/{id}/update-profile', [HealthWorkerController::class, 'updateProfile']);
+    //login route
+Route::post('/login', [HealthWorkerController::class, 'login']);
 });
+
+
 //group of cadre routes
 Route::prefix('v1')->group(function () {
     Route::get('cadres', [CadreController::class, 'index']);

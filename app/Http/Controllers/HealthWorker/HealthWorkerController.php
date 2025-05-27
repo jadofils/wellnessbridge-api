@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\HealthWorker;
-
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\Cadre;
 use Illuminate\Http\Request;
 use App\Models\HealthWorker; // Ensure you import the HealthWorker model
 use Exception;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Hash;
 
 
 
@@ -105,32 +107,31 @@ class HealthWorkerController extends Controller
 }
 /**
  * @OA\Post(
- *      path="/api/v1/healthworkers/assign",
+ *      path="/api/v1/healthworkers/{hwID}/assign",
  *      tags={"Health Workers"},
  *      summary="Assign a health worker to a cadre",
  *      description="Assigns a health worker to a specific cadre",
+ *      @OA\Parameter(name="hwID", in="path", required=true, @OA\Schema(type="integer")),
  *      @OA\RequestBody(
- *          required=true,
  *          @OA\JsonContent(
- *              required={"cadID", "hwID"},
- *              @OA\Property(property="cadID", type="integer", example=1),
- *              @OA\Property(property="hwID", type="integer", example=1)
+ *              required={"cadID"},
+ *              @OA\Property(property="cadID", type="integer", example=21)
  *          )
  *      ),
  *      @OA\Response(response=200, description="Health worker assigned to cadre successfully"),
- *      @OA\Response(response=404, description="Cadre or health worker not found"),
+ *      @OA\Response(response=404, description="Health worker or cadre not found"),
+ *      @OA\Response(response=422, description="Validation error"),
  *      @OA\Response(response=500, description="Internal server error")
  * )
  */
-
-
+ 
 //assign healthworker to cadre
-public function AssignHealthWorkToCadre(Request $request)
+public function AssignHealthWorkToCadre(Request $request, $hwID)
 {
     try {
+        // Validate only cadID, since hwID comes from URL parameter
         $validatedData = $request->validate([
             'cadID' => 'required|exists:cadres,cadID',
-            'hwID' => 'required|exists:health_workers,hwID',
         ]);
 
         // Check if the cadre exists
@@ -141,10 +142,19 @@ public function AssignHealthWorkToCadre(Request $request)
             ], 404);
         }
 
-        // Find the health worker and assign the cadre
-        $healthWorker = HealthWorker::find($validatedData['hwID']);
+        // Find the health worker using the route parameter
+        $healthWorker = HealthWorker::find($hwID);
         if (!$healthWorker) {
-            return response()->json(['message' => 'Health worker not found'], 404);
+            return response()->json([
+                'message' => 'Health worker not found'
+            ], 404);
+        }
+
+        // Check if health worker is already assigned to this cadre
+        if ($healthWorker->cadID == $validatedData['cadID']) {
+            return response()->json([
+                'message' => 'Health worker already assigned to this cadre'
+            ], 422);
         }
 
         // Assign the health worker to the cadre
@@ -152,7 +162,7 @@ public function AssignHealthWorkToCadre(Request $request)
         $healthWorker->save();
 
         // Reload the health worker with the cadre relationship
-        $healthWorker = HealthWorker::with('cadre')->find($validatedData['hwID']);
+        $healthWorker->load('cadre');
 
         return response()->json([
             'message' => 'Health worker assigned to cadre successfully',
@@ -193,44 +203,151 @@ public function AssignHealthWorkToCadre(Request $request)
  *      @OA\Response(response=500, description="Internal server error")
  * )
  */
-
-
-    public function store(Request $request)
+public function store(Request $request)
     {
         try {
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'gender' => 'required|string|max:255',
-                'dob' => 'required|date',
+                'dob' => 'date',
                 'role' => 'required|string|max:255',
-                'telephone' => 'required|string|max:255|unique:health_workers',
+                'telephone' => 'string|max:255|unique:health_workers',
                 'email' => 'required|string|email|max:255|unique:health_workers',
                 'image' => 'nullable|string',
-                'address' => 'required|string',
-                'cadID' => 'required|exists:cadres,cadID',
+                'address' => 'string',
+                'password' => 'required|string|min:6', // 'confirmed' checks for password_confirmation field
+                'cadID' => 'required|exists:cadres,cadID', // Using cadID to match the model relationships
             ]);
-    //create the with the image
+
+            // Check if cadre exists first
+            $existCadre = Cadre::where('cadID', $validatedData['cadID'])->first();
+            if (!$existCadre) {
+                return response()->json([
+                    'message' => 'Cadre not found'
+                ], 404);
+            }
+
+            // --- IMPORTANT: Hash the password before creating the health worker ---
+            $validatedData['password'] = Hash::make($validatedData['password']);
+
+            // Create the health worker
             $healthWorker = HealthWorker::create($validatedData);
+            
             return response()->json([
                 'message' => 'Health worker created successfully',
                 'data' => $healthWorker
             ], 201);
-      $existCadre = Cadre::where('cadreID', $validatedData['cadreID'])->first();
-        if (!$existCadre) {
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // This specific catch block is good for validation errors
             return response()->json([
-                'message' => 'Cadre not found'
-            ], 404);
-        }
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $e->getMessage()
             ], 500);
         }
+    } //update the health worker by param id to update profile
+/**
+ * @OA\Put(
+ *      path="/api/v1/healthworkers/{hwID}/update-profile",
+ *      tags={"Health Workers"},
+ *      summary="Update health worker profile",
+ *      description="Updates the profile of a health worker, including the image",
+ *      @OA\Parameter(
+ *          name="hwID",
+ *          in="path",
+ *          required=true,
+ *          description="Health worker ID",
+ *          @OA\Schema(type="integer")
+ *      ),
+ *      @OA\RequestBody(
+ *          required=true,
+ *          @OA\JsonContent(
+ *              @OA\Property(property="image", type="string", format="binary", description="Profile image (jpeg/png/gif)"),
+ *          )
+ *      ),
+ *      @OA\Response(response=200, description="Health worker updated successfully"),
+ *      @OA\Response(response=404, description="Health worker not found"),
+ *      @OA\Response(response=422, description="Invalid image format"),
+ *      @OA\Response(response=500, description="Internal server error")
+ * )
+ */
+
+ public function updateProfile(Request $request, $hwID)
+    {
+        try {
+            // 1. Find the health worker
+            $healthWorker = HealthWorker::where("hwID", $hwID)->first();
+            if (!$healthWorker) {
+                return response()->json(['message' => 'Health worker not found'], 404);
+            }
+
+            // 2. Validate all incoming data, including non-file fields
+            // Use 'sometimes' for optional fields, 'nullable' if they can be cleared,
+            // or 'required' if they must always be present.
+            $validatedData = $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'email' => 'sometimes|email|max:255|unique:health_workers,email,' . $healthWorker->hwID . ',hwID', // 'unique' rule needs exception for current user
+                'telephone' => 'sometimes|string|max:20',
+                'role' => 'sometimes|string|max:255', // Assuming role can be updated
+                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048', // Image is now optional
+            ]);
+
+            // 3. Handle image update separately (as it has specific logic)
+            if ($request->hasFile('image')) {
+                // If health worker already has an image, delete the old one
+                if ($healthWorker->image && Storage::disk('public')->exists($healthWorker->image)) {
+                    Storage::disk('public')->delete($healthWorker->image);
+                }
+
+                // Store the new image
+                $imagePath = $request->file('image')->store('images', 'public');
+                $healthWorker->image = $imagePath;
+            }
+
+            // 4. Update other fields only if they are present in the request
+            // This prevents overwriting existing data with nulls if a field isn't sent.
+            if (isset($validatedData['name'])) {
+                $healthWorker->name = $validatedData['name'];
+            }
+            if (isset($validatedData['email'])) {
+                $healthWorker->email = $validatedData['email'];
+            }
+            if (isset($validatedData['telephone'])) {
+                $healthWorker->telephone = $validatedData['telephone'];
+            }
+            if (isset($validatedData['role'])) {
+                $healthWorker->role = $validatedData['role'];
+            }
+
+            // 5. Save the health worker instance to persist all changes
+            // This is now outside the image-specific block, so it always saves if data is present.
+            $healthWorker->save();
+
+            // 6. Return a successful response with the updated data
+            return response()->json([
+                'message' => 'Health worker profile updated successfully',
+                'data' => $healthWorker // Return the updated model instance
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Catch validation exceptions specifically to return 422
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (Exception $e) {
+            // Catch other general exceptions
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-    
-
-
     /**
  * @OA\Put(
  *      path="/api/v1/healthworkers/{hwID}",
@@ -392,4 +509,95 @@ public function AssignHealthWorkToCadre(Request $request)
             return response()->json(['error' => 'An unexpected error occurred'], 500);
         }
     }
+
+       /**
+     * @OA\Post(
+     *     path="/api/v1/healthworkers/login",
+     *     tags={"Authentication"},
+     *     summary="User Login",
+     *     description="Logs in a user and returns a token.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password", "role"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123"),
+     *             @OA\Property(property="role", type="string", example="health_worker")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Login Successful"),
+     *     @OA\Response(response=401, description="Invalid Credentials"),
+     *     @OA\Response(response=403, description="Role Mismatch"),
+     *     @OA\Response(response=404, description="User Not Found"),
+     *     @OA\Response(response=429, description="Too Many Requests")
+     * )
+     */
+    public function login(Request $request)
+{
+    try {
+        // Rate limiter to prevent brute-force attacks
+        if (RateLimiter::tooManyAttempts('login:' . $request->email, 5)) {
+            return response()->json(['message' => 'Too many login attempts. Please try again later.'], 429);
+        }
+
+        // Normalize the role to lowercase for consistent validation
+        // This makes 'admin', 'Admin', 'ADMIN' all treated as 'admin'
+        $request->merge(['role' => strtolower($request->input('role'))]);
+
+        // Validate input
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+            // Now, list all roles in lowercase. Remove the empty string.
+            'role' => ['required', 'string', 'in:health_worker,admin,parent,umunyabuzima'],
+            'remember_me' => 'boolean',
+        ]);
+
+        // Find user
+        // Consider if the email should also be case-insensitive in lookup,
+        // though standard practice is emails are case-insensitive.
+        $user = HealthWorker::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Verify password using Laravel's Hash facade
+        if (!Hash::check($request->password, $user->password)) {
+            // Clear rate limiter on failed login to avoid locking out legitimate users due to password typo
+            RateLimiter::hit('login:' . $request->email); // Increment failed attempts
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        // Check role match - Ensure the role stored in the database is also consistent (e.g., lowercase)
+        // Or, convert the database role to lowercase for comparison here.
+        if (strtolower($user->role) !== $request->role) { // Compare normalized roles
+            // Increment rate limiter on role mismatch too, as it's a failed attempt
+            RateLimiter::hit('login:' . $request->email);
+            return response()->json(['message' => 'Role mismatch'], 403);
+        }
+
+        // Generate API token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Reset rate limiter on successful login
+        RateLimiter::clear('login:' . $request->email);
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 200);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Importantly, increment rate limiter for failed validation too
+        RateLimiter::hit('login:' . $request->email);
+        return response()->json([
+            'message' => 'Validation Error',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Throwable $th) {
+        // For general errors, also consider hitting the rate limiter if it's a critical section
+        return response()->json(['message' => 'An error occurred: ' . $th->getMessage()], 500);
+    }
+}
 }

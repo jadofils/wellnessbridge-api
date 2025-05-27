@@ -1910,31 +1910,35 @@
                 }
             }
         },
-        "/api/v1/healthworkers/assign": {
+        "/api/v1/healthworkers/{hwID}/assign": {
             "post": {
                 "tags": [
                     "Health Workers"
                 ],
                 "summary": "Assign a health worker to a cadre",
                 "description": "Assigns a health worker to a specific cadre",
-                "operationId": "ed968c7adfa7ff3805464b33b570ea71",
+                "operationId": "5c8366e03e006fbe1f45fc10e6ee0095",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "cadID",
-                                    "hwID"
+                                    "cadID"
                                 ],
                                 "properties": {
                                     "cadID": {
                                         "type": "integer",
-                                        "example": 1
-                                    },
-                                    "hwID": {
-                                        "type": "integer",
-                                        "example": 1
+                                        "example": 21
                                     }
                                 },
                                 "type": "object"
@@ -1947,7 +1951,62 @@
                         "description": "Health worker assigned to cadre successfully"
                     },
                     "404": {
-                        "description": "Cadre or health worker not found"
+                        "description": "Health worker or cadre not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/healthworkers/{hwID}/update-profile": {
+            "put": {
+                "tags": [
+                    "Health Workers"
+                ],
+                "summary": "Update health worker profile",
+                "description": "Updates the profile of a health worker, including the image",
+                "operationId": "f363319d24b30d3bb4cc244dac2e5e9b",
+                "parameters": [
+                    {
+                        "name": "hwID",
+                        "in": "path",
+                        "description": "Health worker ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "image": {
+                                        "description": "Profile image (jpeg/png/gif)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Health worker updated successfully"
+                    },
+                    "404": {
+                        "description": "Health worker not found"
+                    },
+                    "422": {
+                        "description": "Invalid image format"
                     },
                     "500": {
                         "description": "Internal server error"
@@ -2015,6 +2074,63 @@
                     },
                     "500": {
                         "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/healthworkers/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User Login",
+                "description": "Logs in a user and returns a token.",
+                "operationId": "b3174da28a1df3aa66123f14382e34b0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "health_worker"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login Successful"
+                    },
+                    "401": {
+                        "description": "Invalid Credentials"
+                    },
+                    "403": {
+                        "description": "Role Mismatch"
+                    },
+                    "404": {
+                        "description": "User Not Found"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
                     }
                 }
             }
@@ -2595,6 +2711,10 @@
         {
             "name": "Health Workers",
             "description": "Health Workers"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
         },
         {
             "name": "ProjectAssignments",
